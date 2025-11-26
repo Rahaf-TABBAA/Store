@@ -1,0 +1,71 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: shop-application
+    
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shopdb
+    username: shopuser
+    password: shoppass
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/shop-realm
+          jwk-set-uri: http://localhost:8180/realms/shop-realm/protocol/openid-connect/certs
+
+# Keycloak Configuration
+keycloak:
+  realm: shop-realm
+  auth-server-url: http://localhost:8180
+  resource: shop-client
+  public-client: true
+  bearer-only: true
+
+# Logging Configuration
+logging:
+  level:
+    com.shop: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
+
+# Custom application properties
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:myLocalSecretKey}
+      expiration: 86400000 # 24 hours
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:4200,http://localhost:8080}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"

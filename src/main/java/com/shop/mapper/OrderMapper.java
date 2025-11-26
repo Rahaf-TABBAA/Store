@@ -9,15 +9,17 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {OrderItemMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface OrderMapper {
     
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.username", target = "userName")
+    @Mapping(target = "orderItems", ignore = true)
     OrderDto toDto(Order order);
     
     @Mapping(source = "userId", target = "user.id")
     @Mapping(target = "version", ignore = true)
+    @Mapping(target = "orderItems", ignore = true)
     Order toEntity(OrderDto orderDto);
     
     List<OrderDto> toDtoList(List<Order> orders);
